@@ -17,3 +17,27 @@ model User {
 
   @@map("users")
 }
+
+model Mark {
+  id        String    @id
+  name      String    @unique
+  createdAt DateTime
+  updatedAt DateTime
+  Product   Product[]
+
+  @@map("marks")
+}
+
+model Product {
+  id          String   @id
+  name        String
+  description String
+  category    String
+  amount      Int
+  markId      String
+  mark        Mark     @relation(fields: [markId], references: [id])
+  createdAt   DateTime
+  updatedAt   DateTime
+
+  @@map("products")
+}

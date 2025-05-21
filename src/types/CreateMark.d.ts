@@ -1,0 +1,3 @@
+type MarkRequest = {
+    name: string;
+}
