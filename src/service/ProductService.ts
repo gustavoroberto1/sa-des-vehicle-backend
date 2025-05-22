@@ -1,6 +1,7 @@
 
-import { Product } from "@prisma/client";
+import { Product, ProductCategory } from "@prisma/client";
 import { prisma } from "../prisma/client";
+import { convertProductCategoryToString, convertToProductCategory } from "../util/convertCategoryType";
 
 class ProductService {
     private OS: number = 0;
@@ -11,13 +12,14 @@ class ProductService {
             throw new Error("Marca não existe!!!")
         }
 
+
         const product: Product = {
             id: crypto.randomUUID(),
             name: data.name,
             description: data.description,
             amount: data.amount,
             markId: data.markId,
-            category: data.category,
+            category: convertToProductCategory(data.category),
             createdAt: new Date(),
             updatedAt: new Date()
         }
@@ -50,7 +52,7 @@ class ProductService {
             id: product.id,
             name: product.name,
             description: product.description,
-            category: product.category,
+            category: convertProductCategoryToString(product.category),
             mark: product.mark.name,
             amount: product.amount,
             createdAt: product.createdAt,

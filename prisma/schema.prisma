@@ -28,11 +28,19 @@ model Mark {
   @@map("marks")
 }
 
+enum ProductCategory {
+  MOTOR      @map("Motor")
+  PNEU       @map("Pneu")
+  ELETRICO   @map("Elétrico")
+  ACESSORIOS @map("Acessórios")
+  OUTROS     @map("Outros")
+}
+
 model Product {
   id          String   @id
   name        String
   description String
-  category    String
+  category    ProductCategory
   amount      Int
   markId      String
   mark        Mark     @relation(fields: [markId], references: [id])
