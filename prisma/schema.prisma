@@ -7,6 +7,31 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum ProductCategory {
+  MOTOR      @map("Motor")
+  PNEU       @map("Pneu")
+  ELETRICO   @map("Elétrico")
+  ACESSORIOS @map("Acessórios")
+  OUTROS     @map("Outros")
+}
+
+enum Color {
+  PRETO    @map("Preto")
+  PRATA    @map("Prata")
+  BRANCO   @map("Branco")
+  CINZA    @map("Cinza")
+  VERMELHO @map("Vermelho")
+}
+
+enum Optional {
+  AR_CONDICIONADO   @map("Ár-Condicionado")
+  DIRECAO_ELETRICA  @map("Direção Elética")
+  CAMBIO_AUTOMATICO @map("Câmbio Automático")
+  ARO_LIGA_LEVE     @map("Aro Liga Leve")
+  BANCO_DE_COURO    @map("Bando de Couro")
+  CAMERA_DE_RE      @map("Câmera de Ré")
+}
+
 model User {
   id        String   @id
   name      String
@@ -28,24 +53,52 @@ model Mark {
   @@map("marks")
 }
 
-enum ProductCategory {
-  MOTOR      @map("Motor")
-  PNEU       @map("Pneu")
-  ELETRICO   @map("Elétrico")
-  ACESSORIOS @map("Acessórios")
-  OUTROS     @map("Outros")
-}
-
 model Product {
-  id          String   @id
-  name        String
-  description String
-  category    ProductCategory
-  amount      Int
-  markId      String
-  mark        Mark     @relation(fields: [markId], references: [id])
-  createdAt   DateTime
-  updatedAt   DateTime
+  id           String          @id
+  name         String
+  description  String
+  category     ProductCategory
+  amount       Int
+  markId       String
+  mark         Mark            @relation(fields: [markId], references: [id])
+  createdAt    DateTime
+  updatedAt    DateTime
+  ProductModel ProductModel[]
 
   @@map("products")
+}
+
+model Model {
+  id            String         @id
+  name          String
+  numberOfPorts Int
+  fuelType      String
+  ProductModel  ProductModel[]
+  createdAt     DateTime
+  updatedAt     DateTime
+  Production    Production[]
+}
+
+model ProductModel {
+  productId String
+  modelId   String
+
+  product Product @relation(fields: [productId], references: [id])
+  model   Model   @relation(fields: [modelId], references: [id])
+
+  @@id([productId, modelId])
+  @@map("product_model")
+}
+
+model Production {
+  id        String     @id
+  modelId   String
+  model     Model      @relation(fields: [modelId], references: [id])
+  color     Color
+  amount    Int
+  optional  Optional[]
+  createdAt DateTime
+  updatedAt DateTime
+
+  @@map("production")
 }
