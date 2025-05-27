@@ -34,4 +34,15 @@ export async function productController(app: FastifyInstance) {
         }
     })
 
+    app.get("/product/search", async (request: FastifyRequest, reply: FastifyReply) => {
+        const { category } = request.query as { category: string }
+
+        try {
+            const products = await productService.getByCategory(category)
+            return reply.code(200).send(products);
+        } catch (error: any) {
+            return reply.code(400).send({ erro: error.message })
+        }
+    })
+
 }

@@ -59,6 +59,27 @@ class ProductService {
             updatedAt: product.updatedAt,
         }))
     }
+
+    public async getByCategory(category: string){
+        const categoryEnum = convertToProductCategory(category);
+        const products = await prisma.product.findMany({
+            where: { category: categoryEnum },
+            include: {
+                mark: true
+            }
+        })
+        
+        return products.map(product => ({
+            id: product.id,
+            name: product.name,
+            description: product.description,
+            category: convertProductCategoryToString(product.category),
+            mark: product.mark.name,
+            amount: product.amount,
+            createdAt: product.createdAt,
+            updatedAt: product.updatedAt,
+        }))
+    }
 }
 
 export const productService = new ProductService();

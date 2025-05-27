@@ -77,6 +77,8 @@ model Model {
   createdAt     DateTime
   updatedAt     DateTime
   Production    Production[]
+
+  @@map("models")
 }
 
 model ProductModel {

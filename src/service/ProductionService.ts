@@ -2,8 +2,8 @@
 import { ProductCategory, Production } from "@prisma/client";
 import { prisma } from "../prisma/client";
 import { CreateProductionRequest } from "../types/Production";
-import { convertToColor } from "../util/convertColor";
-import { convertToOptional } from "../util/convertOptional";
+import { convertColorToString, convertToColor } from "../util/convertColor";
+import { convertOptionalToString, convertToOptional } from "../util/convertOptional";
 
 class ProductionService {
     public async register({ modelId, amount, color, optional }: CreateProductionRequest): Promise<void> {
@@ -46,7 +46,7 @@ class ProductionService {
             createdAt: new Date(),
             updatedAt: new Date()
         }
-
+        
         await prisma.$transaction([
             prisma.production.create({ data: production }),
             prisma.product.update({ where: { id: motor.product.id }, data: { amount: { decrement: amount } } }),
@@ -56,9 +56,23 @@ class ProductionService {
     }
 
     public async getAll() {
-        return await prisma.production.findMany();
+        const productions = await prisma.production.findMany({
+            include: {
+                model: true
+            }
+        });
+
+        return productions.map(production =>  ({
+            id: production.id,
+            model: production.model.name,
+            color: convertColorToString(production.color),
+            amount: production.amount,
+            optional: production.optional.map(o => convertOptionalToString(o)),
+            createdAt: production.createdAt,
+            updatedAt: production.updatedAt
+        }))
+
     }
 }
 
 export const productionService = new ProductionService();
-
