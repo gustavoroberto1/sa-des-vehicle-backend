@@ -25,11 +25,19 @@ enum Color {
 
 enum Optional {
   AR_CONDICIONADO   @map("Ár-Condicionado")
-  DIRECAO_ELETRICA  @map("Direção Elética")
+  DIRECAO_ELETRICA  @map("Direção Elétrica")
   CAMBIO_AUTOMATICO @map("Câmbio Automático")
   ARO_LIGA_LEVE     @map("Aro Liga Leve")
   BANCO_DE_COURO    @map("Bando de Couro")
   CAMERA_DE_RE      @map("Câmera de Ré")
+}
+
+enum Status {
+  PENDENTE           @map("Pendente")
+  APROVADO           @map("Aprovado")
+  REPROVADO          @map("Reprovado")
+  EM_MANUTENCAO      @map("Em Manutenção")
+  PENDENTE_VALIDACAO @map("Pendente de Validação")
 }
 
 model User {
@@ -101,6 +109,23 @@ model Production {
   optional  Optional[]
   createdAt DateTime
   updatedAt DateTime
+  Quality   Quality[]
 
   @@map("production")
+}
+
+model Quality {
+  id           String     @id
+  productionId String
+  production   Production @relation(fields: [productionId], references: [id])
+  status       Status
+  motor        Boolean?
+  pneu         Boolean?
+  battery      Boolean?
+  optional     Boolean?
+  note         String?
+  createdAt    DateTime
+  updatedAt    DateTime
+
+  @@map("quality")
 }

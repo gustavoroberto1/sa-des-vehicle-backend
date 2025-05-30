@@ -1,5 +1,5 @@
 
-import { ProductCategory, Production } from "@prisma/client";
+import { ProductCategory, Production, Quality, Status } from "@prisma/client";
 import { prisma } from "../prisma/client";
 import { CreateProductionRequest } from "../types/Production";
 import { convertColorToString, convertToColor } from "../util/convertColor";
@@ -46,9 +46,23 @@ class ProductionService {
             createdAt: new Date(),
             updatedAt: new Date()
         }
-        
+
+        const quality: Quality = {
+            id: crypto.randomUUID(),
+            productionId: production.id,
+            status: Status.PENDENTE,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            battery: null,
+            motor: null,
+            note: null,
+            optional: null,
+            pneu: null
+        }
+
         await prisma.$transaction([
             prisma.production.create({ data: production }),
+            prisma.quality.create({ data: quality }),
             prisma.product.update({ where: { id: motor.product.id }, data: { amount: { decrement: amount } } }),
             prisma.product.update({ where: { id: pneu.product.id }, data: { amount: { decrement: (5 * amount) } } }),
             prisma.product.update({ where: { id: battery.product.id }, data: { amount: { decrement: amount } } }),
@@ -62,7 +76,7 @@ class ProductionService {
             }
         });
 
-        return productions.map(production =>  ({
+        return productions.map(production => ({
             id: production.id,
             model: production.model.name,
             color: convertColorToString(production.color),
